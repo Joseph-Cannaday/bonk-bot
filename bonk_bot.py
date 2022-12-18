@@ -1,14 +1,12 @@
 import os
-
+import os.path
+import json
 import discord
 from discord import app_commands
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
-MEMBER = os.getenv('DISCORD_MEMBER')
-GUILD_ID = os.getenv('GUILD_ID')
 
 intent = discord.Intents.all()
 intent.members = True
@@ -42,14 +40,34 @@ async def self(interaction: discord.Interaction, name: discord.Member):
 async def self(interaction: discord.Interaction, name: discord.Member):
     guild = interaction.guild
     channel = discord.utils.get(guild.voice_channels, name = 'bonk')
+    #check if the
+    if os.path.isfile('jailserver.json'):
+            with open('jailserver.json') as f:
+                data = f.read()
+            if data: 
+                jail_dict = json.loads(data)
+                channel_name = jail_dict.get(str(guild.id), 'bonk')
+                channel = discord.utils.get(guild.voice_channels, name = channel_name)
+
     await name.move_to(channel)
     await interaction.response.send_message(f'Jailed {name.name}')
 
-@tree.command(name='change-jail', default_member_permissions='administrator')
+@tree.command(name='change-jail')
 async def self(interaction: discord.Interaction, channel: discord.VoiceChannel):
     guild = interaction.guild
-    channel = discord.utils.get(guild.voice_channels, name = 'bonk')
+    if os.path.isfile('jailserver.json'):
+        with open('jailserver.json') as f:
+            data = f.read()
+        if data: 
+            jail_dict = json.loads(data)
+            jail_dict.update({str(guild.id) : channel.name})
+        else:
+            jail_dict = {str(guild.id) : channel.name}
+    else:
+        jail_dict = {str(guild.id) : channel.name}
+    with open('jailserver.json', 'w') as convert_file:
+        convert_file.write(json.dumps(jail_dict))
 
-# TODO: Add server dict for jail vc name
+    await interaction.response.send_message('Jail channel moved to: '+ channel.name, ephemeral=True)
 
 client.run(TOKEN)
