@@ -45,9 +45,11 @@ async def self(interaction: discord.Interaction, name: discord.Member):
     await name.move_to(channel)
     await interaction.response.send_message(f'Jailed {name.name}')
 
-@tree.command(name='change-jail' default_member_permissions='administrator')
+@tree.command(name='change-jail', default_member_permissions='administrator')
 async def self(interaction: discord.Interaction, channel: discord.VoiceChannel):
     guild = interaction.guild
     channel = discord.utils.get(guild.voice_channels, name = 'bonk')
+
+# TODO: Add server dict for jail vc name
 
 client.run(TOKEN)
