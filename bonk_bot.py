@@ -36,7 +36,7 @@ async def self(interaction: discord.Interaction, name: discord.Member):
     await interaction.response.send_message(f'Bonked {name.name}')
     await name.move_to(None)
   
-@tree.command(name='jail')
+@tree.command(name='jail', description='move user to jail')
 async def self(interaction: discord.Interaction, name: discord.Member):
     guild = interaction.guild
     channel = discord.utils.get(guild.voice_channels, name = 'bonk')
@@ -52,7 +52,7 @@ async def self(interaction: discord.Interaction, name: discord.Member):
     await name.move_to(channel)
     await interaction.response.send_message(f'Jailed {name.name}')
 
-@tree.command(name='change-jail')
+@tree.command(name='change-jail', description='change jail channel(default is \'bonk\')')
 async def self(interaction: discord.Interaction, channel: discord.VoiceChannel):
     guild = interaction.guild
     if os.path.isfile('jailserver.json'):
